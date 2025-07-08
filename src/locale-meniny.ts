@@ -1,0 +1,47 @@
+import { NameDay, MENINY_DATA, findNamesByDate, findDateByName, getTodayNameDays } from './meniny-data.js';
+import czData from './data/cz.json' assert { type: 'json' };
+import huData from './data/hu.json' assert { type: 'json' };
+import bgData from './data/bg.json' assert { type: 'json' };
+
+export type Locale = 'sk' | 'cz' | 'hu' | 'bg';
+
+type JsonData = Record<string, string[]>;
+
+const convert = (data: JsonData): NameDay[] =>
+  Object.entries(data).map(([key, names]) => {
+    const [month, day] = key.split('-').map(Number);
+    return { month, day, names };
+  });
+
+const DATA_MAP: Record<Locale, NameDay[]> = {
+  sk: MENINY_DATA,
+  cz: convert(czData as JsonData),
+  hu: convert(huData as JsonData),
+  bg: convert(bgData as JsonData),
+};
+
+export const findNamesByDateLocale = (locale: Locale, month: number, day: number): string[] => {
+  if (locale === 'sk') return findNamesByDate(month, day);
+  const data = DATA_MAP[locale];
+  const found = data.find(d => d.month === month && d.day === day);
+  return found ? found.names : [];
+};
+
+export const findDateByNameLocale = (locale: Locale, name: string): { month: number; day: number } | null => {
+  if (locale === 'sk') return findDateByName(name);
+  const data = DATA_MAP[locale];
+  for (const item of data) {
+    if (item.names.some(n => n.toLowerCase() === name.toLowerCase())) {
+      return { month: item.month, day: item.day };
+    }
+  }
+  return null;
+};
+
+export const getTodayNameDaysLocale = (locale: Locale): { names: string[]; date: string } => {
+  if (locale === 'sk') return getTodayNameDays();
+  const today = new Date();
+  const month = today.getMonth() + 1;
+  const day = today.getDate();
+  return { names: findNamesByDateLocale(locale, month, day), date: `${day}.${month}.` };
+};

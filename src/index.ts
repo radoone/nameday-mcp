@@ -8,13 +8,9 @@ import {
 import { z } from "zod";
 import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import cors from "@fastify/cors";
+import { findNamesByDateLocale, findDateByNameLocale, getTodayNameDaysLocale } from "./locale-meniny.js";
 
-import {
-  findDateByName,
-  findNamesByDate,
-  formatDate,
-  getTodayNameDays,
-} from "./meniny-data.js";
+import { formatDate } from "./meniny-data.js";
 
 // Define the tools available in this MCP server
 const TOOLS: Tool[] = [
@@ -28,6 +24,12 @@ const TOOLS: Tool[] = [
           type: "string",
           description: "The name to search for (e.g., 'Peter', 'Mária')",
         },
+        locale: {
+          type: "string",
+          description: "Calendar locale (sk, cz, hu, bg)",
+          enum: ["sk", "cz", "hu", "bg"],
+          default: "sk"
+        }
       },
       required: ["name"],
     },
@@ -50,6 +52,12 @@ const TOOLS: Tool[] = [
           minimum: 1,
           maximum: 31,
         },
+        locale: {
+          type: "string",
+          description: "Calendar locale (sk, cz, hu, bg)",
+          enum: ["sk", "cz", "hu", "bg"],
+          default: "sk"
+        }
       },
       required: ["month", "day"],
     },
@@ -64,6 +72,12 @@ const TOOLS: Tool[] = [
           type: "string",
           description: "Dummy parameter for no-parameter tools",
         },
+        locale: {
+          type: "string",
+          description: "Calendar locale (sk, cz, hu, bg)",
+          enum: ["sk", "cz", "hu", "bg"],
+          default: "sk"
+        }
       },
       required: ["random_string"],
     },
@@ -75,11 +89,11 @@ async function handleToolRequest(toolName: string, args: any) {
   try {
     switch (toolName) {
       case "find_name_day": {
-        const { name: searchName } = z
-          .object({ name: z.string() })
+        const { name: searchName, locale = 'sk' } = z
+          .object({ name: z.string(), locale: z.string().optional() })
           .parse(args);
 
-        const result = findDateByName(searchName);
+        const result = findDateByNameLocale(locale as any, searchName);
         if (result) {
           return {
             content: [
@@ -94,7 +108,7 @@ async function handleToolRequest(toolName: string, args: any) {
             content: [
               {
                 type: "text",
-                text: `Meno "${searchName}" nebolo nájdené v slovenskom kalendári menín.`,
+                text: `Meno "${searchName}" nebolo nájdené v kalendári menín.`,
               },
             ],
           };
@@ -102,11 +116,11 @@ async function handleToolRequest(toolName: string, args: any) {
       }
 
       case "find_names_by_date": {
-        const { month, day } = z
-          .object({ month: z.number(), day: z.number() })
+        const { month, day, locale = 'sk' } = z
+          .object({ month: z.number(), day: z.number(), locale: z.string().optional() })
           .parse(args);
 
-        const names = findNamesByDate(month, day);
+        const names = findNamesByDateLocale(locale as any, month, day);
         if (names.length > 0) {
           return {
             content: [
@@ -129,7 +143,11 @@ async function handleToolRequest(toolName: string, args: any) {
       }
 
       case "get_today_name_days": {
-        const { names, date } = getTodayNameDays();
+        const { locale = 'sk' } = z
+          .object({ locale: z.string().optional(), random_string: z.string() })
+          .parse(args);
+
+        const { names, date } = getTodayNameDaysLocale(locale as any);
         
         if (names.length > 0) {
           return {
