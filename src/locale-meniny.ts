@@ -2,8 +2,26 @@ import { NameDay, MENINY_DATA, findNamesByDate, findDateByName, getTodayNameDays
 import czData from './data/cz.json' with { type: 'json' };
 import huData from './data/hu.json' with { type: 'json' };
 import bgData from './data/bg.json' with { type: 'json' };
+import plData from './data/pl.json' with { type: 'json' };
+import atData from './data/at.json' with { type: 'json' };
+import hrData from './data/hr.json' with { type: 'json' };
+import ruData from './data/ru.json' with { type: 'json' };
+import grData from './data/gr.json' with { type: 'json' };
+import frData from './data/fr.json' with { type: 'json' };
+import itData from './data/it.json' with { type: 'json' };
 
-export type Locale = 'sk' | 'cz' | 'hu' | 'bg';
+export type Locale =
+  | 'sk'
+  | 'cz'
+  | 'pl'
+  | 'hu'
+  | 'at'
+  | 'hr'
+  | 'bg'
+  | 'ru'
+  | 'gr'
+  | 'fr'
+  | 'it';
 
 type JsonData = Record<string, string[]>;
 
@@ -16,8 +34,15 @@ const convert = (data: JsonData): NameDay[] =>
 const DATA_MAP: Record<Locale, NameDay[]> = {
   sk: MENINY_DATA,
   cz: convert(czData as JsonData),
+  pl: convert(plData as JsonData),
   hu: convert(huData as JsonData),
+  at: convert(atData as JsonData),
+  hr: convert(hrData as JsonData),
   bg: convert(bgData as JsonData),
+  ru: convert(ruData as JsonData),
+  gr: convert(grData as JsonData),
+  fr: convert(frData as JsonData),
+  it: convert(itData as JsonData),
 };
 
 export const findNamesByDateLocale = (locale: Locale, month: number, day: number): string[] => {
