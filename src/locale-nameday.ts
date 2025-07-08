@@ -1,4 +1,4 @@
-import { NameDay, MENINY_DATA, findNamesByDate, findDateByName, getTodayNameDays } from './meniny-data.js';
+import { NameDay, NAMEDAY_DATA, findNamesByDate, findDateByName, getTodayNameDays } from './nameday-data.js';
 
 // Import all locale data files
 const localeData = {
@@ -28,7 +28,7 @@ const convert = (data: JsonData): NameDay[] =>
 const dataCache = new Map<Locale, NameDay[]>();
 
 // Initialize Slovak data
-dataCache.set('sk', MENINY_DATA);
+dataCache.set('sk', NAMEDAY_DATA);
 
 // Helper function to load locale data
 async function getLocaleData(locale: Locale): Promise<NameDay[]> {
@@ -37,7 +37,7 @@ async function getLocaleData(locale: Locale): Promise<NameDay[]> {
   }
 
   if (locale === 'sk') {
-    return MENINY_DATA;
+    return NAMEDAY_DATA;
   }
 
   try {

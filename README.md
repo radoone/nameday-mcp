@@ -1,6 +1,6 @@
 # Slovak Name Days MCP Server
 
-A Model Context Protocol (MCP) server that provides information about Slovak name days (meniny). This server allows you to find when a specific name has its name day or discover which names celebrate on a particular date.
+A Model Context Protocol (MCP) server that provides information about Slovak name days (nameday). This server allows you to find when a specific name has its name day or discover which names celebrate on a particular date.
 
 ---
 
@@ -40,8 +40,8 @@ You can quickly verify that the server works in both online (SSE/HTTP) and offli
 2. **Test via Claude Desktop:**
    - In Claude Desktop settings, add a new MCP server as described below (see "Claude Desktop Configuration").
    - Connect to the server and ask questions like:
-     - "Kedy má meniny Peter?"
-     - "Kto má meniny 29. júna?"
+     - "Kedy má nameday Peter?"
+     - "Kto má nameday 29. júna?"
    - If you get a correct answer, the offline mode works.
 
 ---
@@ -109,10 +109,10 @@ Build and run using Docker:
 
 ```bash
 # Build the Docker image
-docker build -t meniny-mcp-server .
+docker build -t nameday-mcp-server .
 
 # Run the container
-docker run -p 3000:3000 -e MCP_TRANSPORT=sse meniny-mcp-server
+docker run -p 3000:3000 -e MCP_TRANSPORT=sse nameday-mcp-server
 ```
 
 ### 2. Docker Compose with Nginx
@@ -171,10 +171,10 @@ For local stdio usage:
 ```json
 {
   "mcpServers": {
-    "meniny-mcp-server": {
+    "nameday-mcp-server": {
       "command": "node",
-      "args": ["/path/to/meniny-mcp/dist/index.js"],
-      "cwd": "/path/to/meniny-mcp"
+      "args": ["/path/to/nameday-mcp/dist/index.js"],
+      "cwd": "/path/to/nameday-mcp"
     }
   }
 }
@@ -185,7 +185,7 @@ For online SSE usage with mcp-remote:
 ```json
 {
   "mcpServers": {
-    "meniny-mcp-server": {
+    "nameday-mcp-server": {
       "command": "npx",
       "args": [
         "mcp-remote",

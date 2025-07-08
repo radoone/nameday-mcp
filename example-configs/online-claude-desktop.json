@@ -1,10 +1,10 @@
 {
   "mcpServers": {
-    "meniny-mcp-server": {
+    "nameday-mcp-server": {
       "command": "npx",
       "args": [
         "mcp-remote",
-        "https://your-deployed-server.com/sse"
+        "https://your-server.com/sse"
       ]
     }
   }

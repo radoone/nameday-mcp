@@ -5,8 +5,8 @@ import {
   Tool,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { findNamesByDateLocale, findDateByNameLocale, getTodayNameDaysLocale, Locale } from "./locale-meniny.js";
-import { formatDate } from "./meniny-data.js";
+import { findNamesByDateLocale, findDateByNameLocale, getTodayNameDaysLocale, Locale } from "./locale-nameday.js";
+import { formatDate } from "./nameday-data.js";
 
 // Valid locales
 const VALID_LOCALES = ['sk', 'cz', 'pl', 'hu', 'at', 'hr', 'bg', 'ru', 'gr', 'fr', 'it'] as const;
@@ -55,20 +55,29 @@ const TOOLS: Tool[] = [
         month: {
           type: "number",
           description: "Month (1-12)",
-          minimum: 1,
-          maximum: 12,
         },
         day: {
           type: "number",
           description: "Day of the month (1-31)",
-          minimum: 1,
-          maximum: 31,
         },
         locale: {
           type: "string",
-          description: "Calendar locale (sk, cz, pl, hu, at, hr, bg, ru, gr, fr, it)",
-          enum: ["sk","cz","pl","hu","at","hr","bg","ru","gr","fr","it"],
-          default: "sk"
+          description:
+            "Calendar locale (sk, cz, pl, hu, at, hr, bg, ru, gr, fr, it)",
+          enum: [
+            "sk",
+            "cz",
+            "pl",
+            "hu",
+            "at",
+            "hr",
+            "bg",
+            "ru",
+            "gr",
+            "fr",
+            "it",
+          ],
+          default: "sk",
         }
       },
       required: ["month", "day"],
@@ -80,16 +89,29 @@ const TOOLS: Tool[] = [
     inputSchema: {
       type: "object",
       properties: {
+        locale: {
+          type: "string",
+          description:
+            "Calendar locale (sk, cz, pl, hu, at, hr, bg, ru, gr, fr, it)",
+          enum: [
+            "sk",
+            "cz",
+            "pl",
+            "hu",
+            "at",
+            "hr",
+            "bg",
+            "ru",
+            "gr",
+            "fr",
+            "it",
+          ],
+          default: "sk",
+        },
         random_string: {
           type: "string",
           description: "Dummy parameter for no-parameter tools",
         },
-        locale: {
-          type: "string",
-          description: "Calendar locale (sk, cz, pl, hu, at, hr, bg, ru, gr, fr, it)",
-          enum: ["sk","cz","pl","hu","at","hr","bg","ru","gr","fr","it"],
-          default: "sk"
-        }
       },
       required: ["random_string"],
     },
@@ -103,25 +125,18 @@ const isValidLocale = (locale: string): locale is Locale => {
 
 // Helper function to validate date
 const validateDate = (month: number, day: number): void => {
-  if (!Number.isInteger(month) || month < 1 || month > 12) {
+  if (month < 1 || month > 12) {
     throw new Error(`Invalid month: ${month}. Month must be an integer between 1 and 12.`);
   }
-  
-  if (!Number.isInteger(day) || day < 1 || day > 31) {
+  if (day < 1 || day > 31) {
     throw new Error(`Invalid day: ${day}. Day must be an integer between 1 and 31.`);
-  }
-  
-  // Additional validation for specific months
-  const daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  if (day > daysInMonth[month - 1]) {
-    throw new Error(`Invalid day: ${day} for month ${month}. Maximum day for this month is ${daysInMonth[month - 1]}.`);
   }
 };
 
-// Helper function to handle tool requests
-async function handleToolRequest(toolName: string, args: any) {
+// Handle tool requests
+export async function handleToolRequest(name: string, args: any) {
   try {
-    switch (toolName) {
+    switch (name) {
       case "find_name_day": {
         const { name: searchName, locale = 'sk' } = z
           .object({ name: z.string(), locale: z.string().optional() })
@@ -223,9 +238,10 @@ async function handleToolRequest(toolName: string, args: any) {
       }
 
       default:
-        throw new Error(`Unknown tool: ${toolName}`);
+        throw new Error(`Unknown tool: ${name}`);
     }
   } catch (error) {
+    // Handle validation errors and other issues
     const errorMessage = error instanceof Error ? error.message : String(error);
     return {
       content: [
@@ -242,7 +258,7 @@ async function handleToolRequest(toolName: string, args: any) {
 // Create and configure the MCP server
 export function createMCPServer(): Server {
   const server = new Server({
-    name: "meniny-mcp-server",
+    name: "nameday-mcp-server",
     version: "1.0.0",
   }, {
     capabilities: {
@@ -268,4 +284,4 @@ export function setupServerHandlers(server: Server) {
   });
 }
 
-export { TOOLS, handleToolRequest }; 
+export { TOOLS }; 
