@@ -6,10 +6,11 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "tsx src/index.ts",
-    "dev:sse": "MCP_TRANSPORT=sse tsx src/index.ts",
-    "start": "node dist/index.js",
-    "start:sse": "MCP_TRANSPORT=sse node dist/index.js",
+    "vercel-build": "npm run build",
+    "dev": "tsx src/local.ts",
+    "dev:sse": "MCP_TRANSPORT=sse tsx src/local.ts",
+    "start": "node dist/local.js",
+    "start:sse": "MCP_TRANSPORT=sse node dist/local.js",
     "test": "jest"
   },
   "keywords": [
