@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "meniny-mcp-server": {
+      "command": "node",
+      "args": ["/Users/radoone/Devel/meniny-mcp/dist/index.js"],
+      "cwd": "/Users/radoone/Devel/meniny-mcp"
+    }
+  }
+} 
