@@ -5,10 +5,10 @@ yarn-debug.log*
 yarn-error.log*
 package-lock.json
 
-# Build outputs
-dist/
-build/
-*.tsbuildinfo
+# Compiled output
+/out
+/dist
+/build
 
 # Environment files
 .env
