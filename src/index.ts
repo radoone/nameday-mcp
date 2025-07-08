@@ -1,5 +1,4 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import {
   CallToolRequestSchema,
@@ -170,16 +169,14 @@ async function handleToolRequest(toolName: string, args: any) {
   }
 }
 
-// Create the server
-const server = new Server(
-  {
-    name: "meniny-mcp-server",
-    version: "1.0.0",
-    capabilities: {
-      tools: {},
-    },
-  }
-);
+// Create the MCP server instance
+export const server = new Server({
+  name: "meniny-mcp-server",
+  version: "1.0.0",
+  capabilities: {
+    tools: {},
+  },
+});
 
 // Register tool handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -193,93 +190,78 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   return await handleToolRequest(name, args);
 });
 
-// Check if we should run in SSE mode (for online deployment)
-const isSSEMode = process.env.MCP_TRANSPORT === "sse";
-const port = Number(process.env.PORT) || 3000;
-
-if (isSSEMode) {
-  // SSE mode for online deployment using Fastify
-  const fastify: FastifyInstance = Fastify({
-    logger: {
-      level: process.env.NODE_ENV === 'production' ? 'info' : 'debug'
-    }
-  });
-
-  // Register CORS plugin
-  await fastify.register(cors, {
-    origin: '*',
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  });
-
-  // Health check endpoint
-  fastify.get('/health', async (request: FastifyRequest, reply: FastifyReply) => {
-    return {
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      server: 'fastify',
-      version: '1.0.0'
-    };
-  });
-
-  // List available tools
-  fastify.get('/api/tools', async (request: FastifyRequest, reply: FastifyReply) => {
-    return { tools: TOOLS };
-  });
-
-  // Execute a tool
-  fastify.post('/api/tools', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const body = request.body as any;
-      const { tool, args } = body;
-      
-      if (!tool || !args) {
-        reply.code(400);
-        return { error: 'Missing tool or args in request body' };
-      }
-      
-      const result = await handleToolRequest(tool, args);
-      return result;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      reply.code(500);
-      return { error: errorMessage };
-    }
-  });
-
-  // SSE endpoint for MCP communication
-  fastify.get('/sse', async (request: FastifyRequest, reply: FastifyReply) => {
-    const transport = new SSEServerTransport('/messages', reply.raw);
-    server.connect(transport);
-  });
-
-  // Messages endpoint for client-to-server communication
-  fastify.post('/messages', async (request: FastifyRequest, reply: FastifyReply) => {
-    reply.code(405);
-    return { error: 'Use SSE transport for message handling' };
-  });
-
-  // Start the Fastify server
-  try {
-    await fastify.listen({ port, host: '0.0.0.0' });
-    console.log(`🚀 MCP server running in SSE mode on port ${port}`);
-    console.log(`📊 Health check: http://localhost:${port}/health`);
-    console.log(`🔌 SSE endpoint: http://localhost:${port}/sse`);
-    console.log(`🛠️  API endpoints: http://localhost:${port}/api/tools`);
-  } catch (err) {
-    fastify.log.error(err);
-    process.exit(1);
+// Create a Fastify app instance
+export const app: FastifyInstance = Fastify({
+  logger: {
+    level: process.env.NODE_ENV === 'production' ? 'info' : 'debug'
   }
-  
-} else {
-  // Standard stdio mode for local use
-  const transport = new StdioServerTransport();
+});
+
+// Register CORS plugin
+app.register(cors, {
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+});
+
+// Health check endpoint
+app.get('/health', async (request: FastifyRequest, reply: FastifyReply) => {
+  return {
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    server: 'vercel-fastify',
+    version: '1.0.0'
+  };
+});
+
+// List available tools
+app.get('/api/tools', async (request: FastifyRequest, reply: FastifyReply) => {
+  return { tools: TOOLS };
+});
+
+// Execute a tool
+app.post('/api/tools', async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const body = request.body as any;
+    const { tool, args } = body;
+    
+    if (!tool || !args) {
+      reply.code(400);
+      return { error: 'Missing tool or args in request body' };
+    }
+    
+    const result = await handleToolRequest(tool, args);
+    return result;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    reply.code(500);
+    return { error: errorMessage };
+  }
+});
+
+// SSE endpoint for MCP communication
+app.get('/sse', (request, reply) => {
+  // The SDK is designed to have one transport per connection.
+  // We create it here and let it handle the request.
+  const transport = new SSEServerTransport('/messages', reply.raw);
   server.connect(transport);
-  
-  // This ensures the server keeps running and listening for requests
-  server.onerror = (error) => console.error("[MCP Error]", error);
-  process.on("SIGINT", async () => {
-    await server.close();
-    process.exit(0);
-  });
-} 
+  transport.start();
+});
+
+// Endpoint for receiving messages from the client
+app.post('/messages', async (request, reply) => {
+  // This is a bit of a hack to find the right transport
+  // In a real app, you'd use the session ID to route this.
+  const transport = server.transport as SSEServerTransport;
+  if (transport) {
+    await transport.handlePostMessage(request.raw, reply.raw);
+  } else {
+    reply.code(404).send('No active SSE transport found');
+  }
+});
+
+// Main handler for Vercel
+export default async (req: any, res: any) => {
+  await app.ready();
+  app.server.emit('request', req, res);
+}; 
