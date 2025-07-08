@@ -443,6 +443,22 @@ export const formatDate = (month: number, day: number): string => {
     'júl', 'august', 'september', 'október', 'november', 'december'
   ];
   
+  // Validate month
+  if (month < 1 || month > 12) {
+    throw new Error(`Invalid month: ${month}. Month must be between 1 and 12.`);
+  }
+  
+  // Validate day
+  if (day < 1 || day > 31) {
+    throw new Error(`Invalid day: ${day}. Day must be between 1 and 31.`);
+  }
+  
+  // Additional validation for specific months
+  const daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (day > daysInMonth[month - 1]) {
+    throw new Error(`Invalid day: ${day} for month ${month}. Maximum day for this month is ${daysInMonth[month - 1]}.`);
+  }
+  
   return `${day}. ${monthNames[month - 1]}`;
 };
 

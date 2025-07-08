@@ -45,7 +45,16 @@ const DATA_MAP: Record<Locale, NameDay[]> = {
   it: convert(itData as JsonData),
 };
 
+// Helper function to validate locale
+const isValidLocale = (locale: string): locale is Locale => {
+  return Object.keys(DATA_MAP).includes(locale);
+};
+
 export const findNamesByDateLocale = (locale: Locale, month: number, day: number): string[] => {
+  if (!isValidLocale(locale)) {
+    throw new Error(`Invalid locale: ${locale}. Supported locales are: ${Object.keys(DATA_MAP).join(', ')}`);
+  }
+  
   if (locale === 'sk') return findNamesByDate(month, day);
   const data = DATA_MAP[locale];
   const found = data.find(d => d.month === month && d.day === day);
@@ -53,6 +62,10 @@ export const findNamesByDateLocale = (locale: Locale, month: number, day: number
 };
 
 export const findDateByNameLocale = (locale: Locale, name: string): { month: number; day: number } | null => {
+  if (!isValidLocale(locale)) {
+    throw new Error(`Invalid locale: ${locale}. Supported locales are: ${Object.keys(DATA_MAP).join(', ')}`);
+  }
+  
   if (locale === 'sk') return findDateByName(name);
   const data = DATA_MAP[locale];
   for (const item of data) {
@@ -64,6 +77,10 @@ export const findDateByNameLocale = (locale: Locale, name: string): { month: num
 };
 
 export const getTodayNameDaysLocale = (locale: Locale): { names: string[]; date: string } => {
+  if (!isValidLocale(locale)) {
+    throw new Error(`Invalid locale: ${locale}. Supported locales are: ${Object.keys(DATA_MAP).join(', ')}`);
+  }
+  
   if (locale === 'sk') return getTodayNameDays();
   const today = new Date();
   const month = today.getMonth() + 1;

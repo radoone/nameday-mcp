@@ -5,8 +5,11 @@ import {
   Tool,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { findNamesByDateLocale, findDateByNameLocale, getTodayNameDaysLocale } from "./locale-meniny.js";
+import { findNamesByDateLocale, findDateByNameLocale, getTodayNameDaysLocale, Locale } from "./locale-meniny.js";
 import { formatDate } from "./meniny-data.js";
+
+// Valid locales
+const VALID_LOCALES = ['sk', 'cz', 'pl', 'hu', 'at', 'hr', 'bg', 'ru', 'gr', 'fr', 'it'] as const;
 
 // Define the tools available in this MCP server
 const TOOLS: Tool[] = [
@@ -93,6 +96,28 @@ const TOOLS: Tool[] = [
   },
 ];
 
+// Helper function to validate locale
+const isValidLocale = (locale: string): locale is Locale => {
+  return VALID_LOCALES.includes(locale as Locale);
+};
+
+// Helper function to validate date
+const validateDate = (month: number, day: number): void => {
+  if (!Number.isInteger(month) || month < 1 || month > 12) {
+    throw new Error(`Invalid month: ${month}. Month must be an integer between 1 and 12.`);
+  }
+  
+  if (!Number.isInteger(day) || day < 1 || day > 31) {
+    throw new Error(`Invalid day: ${day}. Day must be an integer between 1 and 31.`);
+  }
+  
+  // Additional validation for specific months
+  const daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (day > daysInMonth[month - 1]) {
+    throw new Error(`Invalid day: ${day} for month ${month}. Maximum day for this month is ${daysInMonth[month - 1]}.`);
+  }
+};
+
 // Helper function to handle tool requests
 async function handleToolRequest(toolName: string, args: any) {
   try {
@@ -102,7 +127,12 @@ async function handleToolRequest(toolName: string, args: any) {
           .object({ name: z.string(), locale: z.string().optional() })
           .parse(args);
 
-        const result = findDateByNameLocale(locale as any, searchName);
+        // Validate locale
+        if (!isValidLocale(locale)) {
+          throw new Error(`Invalid locale: ${locale}. Supported locales are: ${VALID_LOCALES.join(', ')}`);
+        }
+
+        const result = findDateByNameLocale(locale, searchName);
         if (result) {
           return {
             content: [
@@ -129,7 +159,15 @@ async function handleToolRequest(toolName: string, args: any) {
           .object({ month: z.number(), day: z.number(), locale: z.string().optional() })
           .parse(args);
 
-        const names = findNamesByDateLocale(locale as any, month, day);
+        // Validate locale
+        if (!isValidLocale(locale)) {
+          throw new Error(`Invalid locale: ${locale}. Supported locales are: ${VALID_LOCALES.join(', ')}`);
+        }
+
+        // Validate date
+        validateDate(month, day);
+
+        const names = findNamesByDateLocale(locale, month, day);
         if (names.length > 0) {
           return {
             content: [
@@ -156,7 +194,12 @@ async function handleToolRequest(toolName: string, args: any) {
           .object({ locale: z.string().optional(), random_string: z.string() })
           .parse(args);
 
-        const { names, date } = getTodayNameDaysLocale(locale as any);
+        // Validate locale
+        if (!isValidLocale(locale)) {
+          throw new Error(`Invalid locale: ${locale}. Supported locales are: ${VALID_LOCALES.join(', ')}`);
+        }
+
+        const { names, date } = getTodayNameDaysLocale(locale);
         
         if (names.length > 0) {
           return {
