@@ -7,11 +7,11 @@
   "scripts": {
     "build": "tsc",
     "vercel-build": "npm run build",
-    "dev": "tsx src/local.ts",
-    "dev:sse": "MCP_TRANSPORT=sse tsx src/local.ts",
-    "start": "node dist/local.js",
-    "start:sse": "MCP_TRANSPORT=sse node dist/local.js",
-    "test": "jest"
+    "dev": "tsx src/index.ts",
+    "dev:sse": "MCP_TRANSPORT=sse tsx src/index.ts",
+    "start": "node dist/index.js",
+    "start:sse": "MCP_TRANSPORT=sse node dist/index.js",
+    "test": "node scripts/test-online.js"
   },
   "keywords": [
     "mcp",

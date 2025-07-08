@@ -132,7 +132,7 @@ async function handleToolRequest(toolName: string, args: any) {
           throw new Error(`Invalid locale: ${locale}. Supported locales are: ${VALID_LOCALES.join(', ')}`);
         }
 
-        const result = findDateByNameLocale(locale, searchName);
+        const result = await findDateByNameLocale(locale, searchName);
         if (result) {
           return {
             content: [
@@ -167,7 +167,7 @@ async function handleToolRequest(toolName: string, args: any) {
         // Validate date
         validateDate(month, day);
 
-        const names = findNamesByDateLocale(locale, month, day);
+        const names = await findNamesByDateLocale(locale, month, day);
         if (names.length > 0) {
           return {
             content: [
@@ -199,7 +199,7 @@ async function handleToolRequest(toolName: string, args: any) {
           throw new Error(`Invalid locale: ${locale}. Supported locales are: ${VALID_LOCALES.join(', ')}`);
         }
 
-        const { names, date } = getTodayNameDaysLocale(locale);
+        const { names, date } = await getTodayNameDaysLocale(locale);
         
         if (names.length > 0) {
           return {

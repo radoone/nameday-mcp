@@ -1,27 +1,20 @@
 import { NameDay, MENINY_DATA, findNamesByDate, findDateByName, getTodayNameDays } from './meniny-data.js';
-import czData from './data/cz.json' with { type: 'json' };
-import huData from './data/hu.json' with { type: 'json' };
-import bgData from './data/bg.json' with { type: 'json' };
-import plData from './data/pl.json' with { type: 'json' };
-import atData from './data/at.json' with { type: 'json' };
-import hrData from './data/hr.json' with { type: 'json' };
-import ruData from './data/ru.json' with { type: 'json' };
-import grData from './data/gr.json' with { type: 'json' };
-import frData from './data/fr.json' with { type: 'json' };
-import itData from './data/it.json' with { type: 'json' };
 
-export type Locale =
-  | 'sk'
-  | 'cz'
-  | 'pl'
-  | 'hu'
-  | 'at'
-  | 'hr'
-  | 'bg'
-  | 'ru'
-  | 'gr'
-  | 'fr'
-  | 'it';
+// Import all locale data files
+const localeData = {
+  cz: () => import('./data/cz.json', { with: { type: 'json' } }),
+  hu: () => import('./data/hu.json', { with: { type: 'json' } }),
+  bg: () => import('./data/bg.json', { with: { type: 'json' } }),
+  pl: () => import('./data/pl.json', { with: { type: 'json' } }),
+  at: () => import('./data/at.json', { with: { type: 'json' } }),
+  hr: () => import('./data/hr.json', { with: { type: 'json' } }),
+  ru: () => import('./data/ru.json', { with: { type: 'json' } }),
+  gr: () => import('./data/gr.json', { with: { type: 'json' } }),
+  fr: () => import('./data/fr.json', { with: { type: 'json' } }),
+  it: () => import('./data/it.json', { with: { type: 'json' } }),
+} as const;
+
+export type Locale = 'sk' | keyof typeof localeData;
 
 type JsonData = Record<string, string[]>;
 
@@ -31,43 +24,61 @@ const convert = (data: JsonData): NameDay[] =>
     return { month, day, names };
   });
 
-const DATA_MAP: Record<Locale, NameDay[]> = {
-  sk: MENINY_DATA,
-  cz: convert(czData as JsonData),
-  pl: convert(plData as JsonData),
-  hu: convert(huData as JsonData),
-  at: convert(atData as JsonData),
-  hr: convert(hrData as JsonData),
-  bg: convert(bgData as JsonData),
-  ru: convert(ruData as JsonData),
-  gr: convert(grData as JsonData),
-  fr: convert(frData as JsonData),
-  it: convert(itData as JsonData),
-};
+// Cache for loaded data
+const dataCache = new Map<Locale, NameDay[]>();
+
+// Initialize Slovak data
+dataCache.set('sk', MENINY_DATA);
+
+// Helper function to load locale data
+async function getLocaleData(locale: Locale): Promise<NameDay[]> {
+  if (dataCache.has(locale)) {
+    return dataCache.get(locale)!;
+  }
+
+  if (locale === 'sk') {
+    return MENINY_DATA;
+  }
+
+  try {
+    const module = await localeData[locale as keyof typeof localeData]();
+    const data = convert(module.default as JsonData);
+    dataCache.set(locale, data);
+    return data;
+  } catch (error) {
+    throw new Error(`Failed to load locale data for ${locale}: ${error}`);
+  }
+}
 
 // Helper function to validate locale
 const isValidLocale = (locale: string): locale is Locale => {
-  return Object.keys(DATA_MAP).includes(locale);
+  return locale === 'sk' || locale in localeData;
 };
 
-export const findNamesByDateLocale = (locale: Locale, month: number, day: number): string[] => {
+export const findNamesByDateLocale = async (locale: Locale, month: number, day: number): Promise<string[]> => {
   if (!isValidLocale(locale)) {
-    throw new Error(`Invalid locale: ${locale}. Supported locales are: ${Object.keys(DATA_MAP).join(', ')}`);
+    throw new Error(`Invalid locale: ${locale}. Supported locales are: sk, ${Object.keys(localeData).join(', ')}`);
   }
   
-  if (locale === 'sk') return findNamesByDate(month, day);
-  const data = DATA_MAP[locale];
+  if (locale === 'sk') {
+    return findNamesByDate(month, day);
+  }
+  
+  const data = await getLocaleData(locale);
   const found = data.find(d => d.month === month && d.day === day);
   return found ? found.names : [];
 };
 
-export const findDateByNameLocale = (locale: Locale, name: string): { month: number; day: number } | null => {
+export const findDateByNameLocale = async (locale: Locale, name: string): Promise<{ month: number; day: number } | null> => {
   if (!isValidLocale(locale)) {
-    throw new Error(`Invalid locale: ${locale}. Supported locales are: ${Object.keys(DATA_MAP).join(', ')}`);
+    throw new Error(`Invalid locale: ${locale}. Supported locales are: sk, ${Object.keys(localeData).join(', ')}`);
   }
   
-  if (locale === 'sk') return findDateByName(name);
-  const data = DATA_MAP[locale];
+  if (locale === 'sk') {
+    return findDateByName(name);
+  }
+  
+  const data = await getLocaleData(locale);
   for (const item of data) {
     if (item.names.some(n => n.toLowerCase() === name.toLowerCase())) {
       return { month: item.month, day: item.day };
@@ -76,14 +87,18 @@ export const findDateByNameLocale = (locale: Locale, name: string): { month: num
   return null;
 };
 
-export const getTodayNameDaysLocale = (locale: Locale): { names: string[]; date: string } => {
+export const getTodayNameDaysLocale = async (locale: Locale): Promise<{ names: string[]; date: string }> => {
   if (!isValidLocale(locale)) {
-    throw new Error(`Invalid locale: ${locale}. Supported locales are: ${Object.keys(DATA_MAP).join(', ')}`);
+    throw new Error(`Invalid locale: ${locale}. Supported locales are: sk, ${Object.keys(localeData).join(', ')}`);
   }
   
-  if (locale === 'sk') return getTodayNameDays();
+  if (locale === 'sk') {
+    return getTodayNameDays();
+  }
+  
   const today = new Date();
   const month = today.getMonth() + 1;
   const day = today.getDate();
-  return { names: findNamesByDateLocale(locale, month, day), date: `${day}.${month}.` };
+  const names = await findNamesByDateLocale(locale, month, day);
+  return { names, date: `${day}.${month}.` };
 };
