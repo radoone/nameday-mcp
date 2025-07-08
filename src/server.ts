@@ -22,9 +22,22 @@ const TOOLS: Tool[] = [
         },
         locale: {
           type: "string",
-          description: "Calendar locale (sk, cz, hu, bg)",
-          enum: ["sk", "cz", "hu", "bg"],
-          default: "sk"
+          description:
+            "Calendar locale (sk, cz, pl, hu, at, hr, bg, ru, gr, fr, it)",
+          enum: [
+            "sk",
+            "cz",
+            "pl",
+            "hu",
+            "at",
+            "hr",
+            "bg",
+            "ru",
+            "gr",
+            "fr",
+            "it",
+          ],
+          default: "sk",
         }
       },
       required: ["name"],
@@ -50,8 +63,8 @@ const TOOLS: Tool[] = [
         },
         locale: {
           type: "string",
-          description: "Calendar locale (sk, cz, hu, bg)",
-          enum: ["sk", "cz", "hu", "bg"],
+          description: "Calendar locale (sk, cz, pl, hu, at, hr, bg, ru, gr, fr, it)",
+          enum: ["sk","cz","pl","hu","at","hr","bg","ru","gr","fr","it"],
           default: "sk"
         }
       },
@@ -70,8 +83,8 @@ const TOOLS: Tool[] = [
         },
         locale: {
           type: "string",
-          description: "Calendar locale (sk, cz, hu, bg)",
-          enum: ["sk", "cz", "hu", "bg"],
+          description: "Calendar locale (sk, cz, pl, hu, at, hr, bg, ru, gr, fr, it)",
+          enum: ["sk","cz","pl","hu","at","hr","bg","ru","gr","fr","it"],
           default: "sk"
         }
       },
