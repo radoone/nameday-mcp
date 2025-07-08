@@ -1,7 +1,13 @@
-import { NameDay, NAMEDAY_DATA, findNamesByDate, findDateByName, getTodayNameDays } from './nameday-data.js';
+// Data structure for name days
+export interface NameDay {
+  month: number;
+  day: number;
+  names: string[];
+}
 
 // Import all locale data files
 const localeData = {
+  sk: () => import('./data/sk.json', { with: { type: 'json' } }),
   cz: () => import('./data/cz.json', { with: { type: 'json' } }),
   hu: () => import('./data/hu.json', { with: { type: 'json' } }),
   bg: () => import('./data/bg.json', { with: { type: 'json' } }),
@@ -14,9 +20,9 @@ const localeData = {
   it: () => import('./data/it.json', { with: { type: 'json' } }),
 } as const;
 
-export type Locale = 'sk' | keyof typeof localeData;
+export type Locale = keyof typeof localeData;
 
-type JsonData = Record<string, string[]>;
+type JsonData = { [key: string]: string[] };
 
 const convert = (data: JsonData): NameDay[] =>
   Object.entries(data).map(([key, names]) => {
@@ -27,21 +33,14 @@ const convert = (data: JsonData): NameDay[] =>
 // Cache for loaded data
 const dataCache = new Map<Locale, NameDay[]>();
 
-// Initialize Slovak data
-dataCache.set('sk', NAMEDAY_DATA);
-
 // Helper function to load locale data
 async function getLocaleData(locale: Locale): Promise<NameDay[]> {
   if (dataCache.has(locale)) {
     return dataCache.get(locale)!;
   }
 
-  if (locale === 'sk') {
-    return NAMEDAY_DATA;
-  }
-
   try {
-    const module = await localeData[locale as keyof typeof localeData]();
+    const module = await localeData[locale]();
     const data = convert(module.default as JsonData);
     dataCache.set(locale, data);
     return data;
@@ -50,18 +49,19 @@ async function getLocaleData(locale: Locale): Promise<NameDay[]> {
   }
 }
 
-// Helper function to validate locale
+// Helper function to normalize string for comparison (remove diacritics)
+const removeDiacritics = (str: string): string => {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+};
+
+// Function to validate locale
 const isValidLocale = (locale: string): locale is Locale => {
-  return locale === 'sk' || locale in localeData;
+  return locale in localeData;
 };
 
 export const findNamesByDateLocale = async (locale: Locale, month: number, day: number): Promise<string[]> => {
   if (!isValidLocale(locale)) {
-    throw new Error(`Invalid locale: ${locale}. Supported locales are: sk, ${Object.keys(localeData).join(', ')}`);
-  }
-  
-  if (locale === 'sk') {
-    return findNamesByDate(month, day);
+    throw new Error(`Invalid locale: ${locale}. Supported locales are: ${Object.keys(localeData).join(', ')}`);
   }
   
   const data = await getLocaleData(locale);
@@ -71,16 +71,15 @@ export const findNamesByDateLocale = async (locale: Locale, month: number, day: 
 
 export const findDateByNameLocale = async (locale: Locale, name: string): Promise<{ month: number; day: number } | null> => {
   if (!isValidLocale(locale)) {
-    throw new Error(`Invalid locale: ${locale}. Supported locales are: sk, ${Object.keys(localeData).join(', ')}`);
-  }
-  
-  if (locale === 'sk') {
-    return findDateByName(name);
+    throw new Error(`Invalid locale: ${locale}. Supported locales are: ${Object.keys(localeData).join(', ')}`);
   }
   
   const data = await getLocaleData(locale);
+  const normalizedSearchName = removeDiacritics(name.toLowerCase());
+  
   for (const item of data) {
-    if (item.names.some(n => n.toLowerCase() === name.toLowerCase())) {
+    const found = item.names.find(n => removeDiacritics(n.toLowerCase()) === normalizedSearchName);
+    if (found) {
       return { month: item.month, day: item.day };
     }
   }
@@ -89,16 +88,14 @@ export const findDateByNameLocale = async (locale: Locale, name: string): Promis
 
 export const getTodayNameDaysLocale = async (locale: Locale): Promise<{ names: string[]; date: string }> => {
   if (!isValidLocale(locale)) {
-    throw new Error(`Invalid locale: ${locale}. Supported locales are: sk, ${Object.keys(localeData).join(', ')}`);
-  }
-  
-  if (locale === 'sk') {
-    return getTodayNameDays();
+    throw new Error(`Invalid locale: ${locale}. Supported locales are: ${Object.keys(localeData).join(', ')}`);
   }
   
   const today = new Date();
   const month = today.getMonth() + 1;
   const day = today.getDate();
   const names = await findNamesByDateLocale(locale, month, day);
+  
+  // Format date in a simple way for all locales
   return { names, date: `${day}.${month}.` };
 };

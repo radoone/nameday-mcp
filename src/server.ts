@@ -6,16 +6,41 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { findNamesByDateLocale, findDateByNameLocale, getTodayNameDaysLocale, Locale } from "./locale-nameday.js";
-import { formatDate } from "./nameday-data.js";
 
 // Valid locales
 const VALID_LOCALES = ['sk', 'cz', 'pl', 'hu', 'at', 'hr', 'bg', 'ru', 'gr', 'fr', 'it'] as const;
+
+// Helper function to format date
+const formatDate = (month: number, day: number): string => {
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  
+  // Validate month
+  if (month < 1 || month > 12) {
+    throw new Error(`Invalid month: ${month}. Month must be between 1 and 12.`);
+  }
+  
+  // Validate day
+  if (day < 1 || day > 31) {
+    throw new Error(`Invalid day: ${day}. Day must be between 1 and 31.`);
+  }
+  
+  // Additional validation for specific months
+  const daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (day > daysInMonth[month - 1]) {
+    throw new Error(`Invalid day: ${day} for month ${month}. Maximum day for this month is ${daysInMonth[month - 1]}.`);
+  }
+  
+  return `${monthNames[month - 1]} ${day}`;
+};
 
 // Define the tools available in this MCP server
 const TOOLS: Tool[] = [
   {
     name: "find_name_day",
-    description: "Find when a specific name has its name day in Slovak calendar",
+    description: "Find when a specific name has its name day",
     inputSchema: {
       type: "object",
       properties: {
