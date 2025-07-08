@@ -95,7 +95,7 @@ async function handleToolRequest(toolName: string, args: any) {
             content: [
               {
                 type: "text",
-                text: `${searchName} má meniny ${formatDate(result.month, result.day)}.`,
+                text: `${searchName} has name day on ${formatDate(result.month, result.day)}.`,
               },
             ],
           };
@@ -104,7 +104,7 @@ async function handleToolRequest(toolName: string, args: any) {
             content: [
               {
                 type: "text",
-                text: `Meno "${searchName}" nebolo nájdené v kalendári menín.`,
+                text: `Name "${searchName}" was not found in the name day calendar.`,
               },
             ],
           };
@@ -122,7 +122,7 @@ async function handleToolRequest(toolName: string, args: any) {
             content: [
               {
                 type: "text",
-                text: `${formatDate(month, day)} má meniny: ${names.join(", ")}.`,
+                text: `${formatDate(month, day)} has name days: ${names.join(", ")}.`,
               },
             ],
           };
@@ -131,7 +131,7 @@ async function handleToolRequest(toolName: string, args: any) {
             content: [
               {
                 type: "text",
-                text: `Na ${formatDate(month, day)} nemá nikto meniny.`,
+                text: `No names have name days on ${formatDate(month, day)}.`,
               },
             ],
           };
@@ -150,7 +150,7 @@ async function handleToolRequest(toolName: string, args: any) {
             content: [
               {
                 type: "text",
-                text: `Dnes ${date} má meniny: ${names.join(", ")}.`,
+                text: `Today ${date} has name days: ${names.join(", ")}.`,
               },
             ],
           };
@@ -159,7 +159,7 @@ async function handleToolRequest(toolName: string, args: any) {
             content: [
               {
                 type: "text",
-                text: `Dnes ${date} nemá nikto meniny.`,
+                text: `Today ${date} no names have name days.`,
               },
             ],
           };
@@ -175,7 +175,7 @@ async function handleToolRequest(toolName: string, args: any) {
       content: [
         {
           type: "text",
-          text: `Chyba pri spracovaní požiadavky: ${errorMessage}`,
+          text: `Error processing request: ${errorMessage}`,
         },
       ],
       isError: true,
