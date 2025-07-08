@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Test script for online MCP server
-const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000';
+const SERVER_URL = process.env.SERVER_URL || 'https://nameday-mcp.vercel.app/';
 
 async function testEndpoint(url, options = {}) {
   try {
