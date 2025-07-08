@@ -2,10 +2,17 @@
 
 A Model Context Protocol (MCP) server that provides nameday information for multiple countries including Slovakia, Czech Republic, Poland, Hungary, and others. This server allows you to find when a specific name has its nameday or discover which names celebrate on a particular date.
 
+## 🌐 Online Version
+
+**Try the online version immediately without installation:**
+👉 **[https://nameday-mcp.vercel.app/](https://nameday-mcp.vercel.app/)**
+
+This hosted version runs on Vercel and provides the same functionality as the local server. Perfect for trying out the service or integrating with online Claude Desktop configurations.
+
 ## Supported Countries
 
 - 🇸🇰 **Slovakia** (sk) - Complete Slovak nameday calendar
-- 🇨🇿 **Czech Republic** (cz) - Czech nameday calendar
+- 🇨🇿 **Czech Republic** (cz) - Czech nameday calendar  
 - 🇵🇱 **Poland** (pl) - Polish nameday calendar
 - 🇭🇺 **Hungary** (hu) - Hungarian nameday calendar
 - 🇦🇹 **Austria** (at) - Austrian nameday calendar
@@ -13,8 +20,10 @@ A Model Context Protocol (MCP) server that provides nameday information for mult
 - 🇮🇹 **Italy** (it) - Italian nameday calendar
 - 🇫🇷 **France** (fr) - French nameday calendar
 - 🇬🇷 **Greece** (gr) - Greek nameday calendar
-- 🇷🇺 **Russia** (ru) - Russian nameday calendar
-- 🇧🇬 **Bulgaria** (bg) - Bulgarian nameday calendar
+- 🇷🇺 **Russia** (ru) - **Extended** Russian Orthodox nameday calendar
+- 🇧🇬 **Bulgaria** (bg) - **Extended** Bulgarian nameday calendar
+
+> **Note:** The Russian and Bulgarian calendars were recently expanded with comprehensive yearly data including traditional Orthodox names and feast days.
 
 ---
 
@@ -36,7 +45,7 @@ You can quickly verify that the server works in both online (SSE/HTTP) and offli
    ```
    - Optionally, set the SERVER_URL environment variable if testing a remote server:
      ```bash
-     SERVER_URL="http://localhost:3000" node scripts/test-online.js
+     SERVER_URL="https://nameday-mcp.vercel.app" node scripts/test-online.js
      ```
 3. **Expected result:**
    - All tests should pass (you will see ✅ in the console).
@@ -70,6 +79,7 @@ You can quickly verify that the server works in both online (SSE/HTTP) and offli
 - **Comprehensive calendars**: Includes traditional namedays throughout the year
 - **Flexible name matching**: Supports search with and without diacritics
 - **Multiple deployment options**: Local (stdio), Online (SSE), and Cloud platforms
+- **Online hosted version**: Ready-to-use at https://nameday-mcp.vercel.app/
 
 ## Installation
 
@@ -119,7 +129,18 @@ The server will be available at:
 
 ## Deployment Options
 
-### 1. Docker Deployment
+### 1. Vercel Deployment (Recommended)
+
+**Official hosted version**: https://nameday-mcp.vercel.app/
+
+To deploy your own version:
+
+1. Fork this repository
+2. Connect your GitHub repository to Vercel
+3. The `vercel.json` file will automatically configure the deployment
+4. Your server will be available at `https://your-app.vercel.app`
+
+### 2. Docker Deployment
 
 Build and run using Docker:
 
@@ -131,7 +152,7 @@ docker build -t nameday-mcp-server .
 docker run -p 3000:3000 -e MCP_TRANSPORT=sse nameday-mcp-server
 ```
 
-### 2. Docker Compose with Nginx
+### 3. Docker Compose with Nginx
 
 For production deployment with reverse proxy:
 
@@ -146,7 +167,7 @@ docker-compose ps
 docker-compose logs -f
 ```
 
-### 3. Railway Deployment
+### 4. Railway Deployment
 
 Deploy to Railway.app:
 
@@ -154,7 +175,7 @@ Deploy to Railway.app:
 2. The `railway.toml` file will automatically configure the deployment
 3. Your server will be available at `https://your-app.railway.app`
 
-### 4. Cloudflare Workers
+### 5. Cloudflare Workers
 
 Deploy to Cloudflare's edge network:
 
@@ -163,7 +184,7 @@ Deploy to Cloudflare's edge network:
 3. Create a new worker and paste the code
 4. Deploy and access at `https://your-worker.your-account.workers.dev`
 
-### 5. Other Cloud Platforms
+### 6. Other Cloud Platforms
 
 The Docker container can be deployed to:
 - **AWS ECS/Fargate**: Use the provided Dockerfile
@@ -182,7 +203,25 @@ The Docker container can be deployed to:
 
 ### Claude Desktop Configuration
 
-For local stdio usage:
+#### Option 1: Using the Official Online Version (Recommended)
+
+**No installation required!** Just add this to your Claude Desktop configuration:
+
+```json
+{
+  "mcpServers": {
+    "nameday-mcp-server": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://nameday-mcp.vercel.app/sse"
+      ]
+    }
+  }
+}
+```
+
+#### Option 2: Local stdio usage
 
 ```json
 {
@@ -196,7 +235,7 @@ For local stdio usage:
 }
 ```
 
-For online SSE usage with mcp-remote:
+#### Option 3: Custom online SSE usage
 
 ```json
 {
@@ -228,7 +267,7 @@ For online SSE usage with mcp-remote:
 
 Example tool usage:
 ```bash
-curl -X POST https://your-server.com/api/tools \
+curl -X POST https://nameday-mcp.vercel.app/api/tools \
   -H "Content-Type: application/json" \
   -d '{"tool": "find_name_day", "args": {"name": "Peter"}}'
 ```
@@ -316,4 +355,4 @@ For questions or issues:
 
 ---
 
-**Note**: This MCP server provides nameday information for multiple countries with comprehensive traditional nameday calendars. The data includes all standard names throughout the year for each supported country. 
+**Note**: This MCP server provides nameday information for multiple countries with comprehensive traditional nameday calendars. The data includes all standard names throughout the year for each supported country. The Russian and Bulgarian calendars were recently expanded with complete yearly data including Orthodox feast days and traditional names. 
