@@ -6,7 +6,7 @@ import { createMCPServer, setupServerHandlers, TOOLS, handleToolRequest } from "
 
 // Environment configuration
 const isSSE = process.env.MCP_TRANSPORT === 'sse';
-const isVercel = process.env.VERCEL === '1';
+const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV !== undefined || process.env.AWS_LAMBDA_FUNCTION_NAME !== undefined;
 const port = Number(process.env.PORT) || 3000;
 
 // Create Fastify app factory
@@ -79,22 +79,21 @@ function createApp(serverName: string): FastifyInstance {
   return app;
 }
 
-// Create app instance for Vercel (only if needed)
-export const app = isVercel ? createApp('vercel-serverless') : null;
+// Create app instance
+const app = createApp(isVercel ? 'vercel-serverless' : 'nameday-mcp-server');
 
 // Main execution logic
 if (isVercel) {
-  // Vercel deployment handled by export above
+  // For Vercel, we just create the app and export it
+  console.log('Running on Vercel serverless environment');
 } else if (isSSE) {
   // Local SSE mode - start HTTP server
-  const localApp = createApp('mcp-sse-server');
-  
-  localApp.listen({ port, host: '0.0.0.0' }, (err, address) => {
+  app.listen({ port, host: '0.0.0.0' }, (err, address) => {
     if (err) {
-      localApp.log.error(err);
+      app.log.error(err);
       process.exit(1);
     }
-    localApp.log.info(`MCP Server (SSE) listening on ${address}`);
+    app.log.info(`MCP Server (SSE) listening on ${address}`);
   });
 } else {
   // Local STDIO mode - start MCP server
@@ -105,11 +104,8 @@ if (isVercel) {
   console.log("MCP Server is running in STDIO mode.");
 }
 
-// Default export for Vercel
+// Export for Vercel
 export default async (req: any, res: any) => {
-  if (!app) {
-    throw new Error('App not initialized for Vercel');
-  }
   await app.ready();
   app.server.emit('request', req, res);
 }; 
