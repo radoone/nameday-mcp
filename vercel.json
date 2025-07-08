@@ -1,13 +1,15 @@
 {
   "version": 2,
+  "builds": [
+    {
+      "src": "dist/index.js",
+      "use": "@vercel/node"
+    }
+  ],
   "rewrites": [
     {
-      "source": "/health",
-      "destination": "/api/health"
-    },
-    {
       "source": "/(.*)",
-      "destination": "/api/index"
+      "destination": "/dist/index.js"
     }
   ]
 } 
