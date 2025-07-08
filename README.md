@@ -1,6 +1,20 @@
-# Slovak Name Days MCP Server
+# Nameday MCP Server
 
-A Model Context Protocol (MCP) server that provides information about Slovak name days (nameday). This server allows you to find when a specific name has its name day or discover which names celebrate on a particular date.
+A Model Context Protocol (MCP) server that provides nameday information for multiple countries including Slovakia, Czech Republic, Poland, Hungary, and others. This server allows you to find when a specific name has its nameday or discover which names celebrate on a particular date.
+
+## Supported Countries
+
+- 🇸🇰 **Slovakia** (sk) - Complete Slovak nameday calendar
+- 🇨🇿 **Czech Republic** (cz) - Czech nameday calendar
+- 🇵🇱 **Poland** (pl) - Polish nameday calendar
+- 🇭🇺 **Hungary** (hu) - Hungarian nameday calendar
+- 🇦🇹 **Austria** (at) - Austrian nameday calendar
+- 🇭🇷 **Croatia** (hr) - Croatian nameday calendar
+- 🇮🇹 **Italy** (it) - Italian nameday calendar
+- 🇫🇷 **France** (fr) - French nameday calendar
+- 🇬🇷 **Greece** (gr) - Greek nameday calendar
+- 🇷🇺 **Russia** (ru) - Russian nameday calendar
+- 🇧🇬 **Bulgaria** (bg) - Bulgarian nameday calendar
 
 ---
 
@@ -40,18 +54,20 @@ You can quickly verify that the server works in both online (SSE/HTTP) and offli
 2. **Test via Claude Desktop:**
    - In Claude Desktop settings, add a new MCP server as described below (see "Claude Desktop Configuration").
    - Connect to the server and ask questions like:
-     - "Kedy má nameday Peter?"
-     - "Kto má nameday 29. júna?"
+     - "When is Peter's nameday?"
+     - "Who has nameday on June 29th?"
+     - "What Slovak names celebrate today?"
    - If you get a correct answer, the offline mode works.
 
 ---
 
 ## Features
 
-- **Find name day by name**: Search for when a specific name has its name day
+- **Multi-country support**: Nameday information for 11+ countries
+- **Find nameday by name**: Search for when a specific name has its nameday
 - **Find names by date**: Discover which names celebrate on a specific date
-- **Get today's name days**: Find out who celebrates today
-- **Comprehensive Slovak calendar**: Includes all traditional Slovak name days throughout the year
+- **Get today's namedays**: Find out who celebrates today
+- **Comprehensive calendars**: Includes traditional namedays throughout the year
 - **Flexible name matching**: Supports search with and without diacritics
 - **Multiple deployment options**: Local (stdio), Online (SSE), and Cloud platforms
 
@@ -173,8 +189,8 @@ For local stdio usage:
   "mcpServers": {
     "nameday-mcp-server": {
       "command": "node",
-      "args": ["/path/to/nameday-mcp/dist/index.js"],
-      "cwd": "/path/to/nameday-mcp"
+      "args": ["./dist/index.js"],
+      "cwd": "./path/to/nameday-mcp"
     }
   }
 }
@@ -220,7 +236,7 @@ curl -X POST https://your-server.com/api/tools \
 ## Available Tools
 
 ### 1. find_name_day
-Find when a specific name has its name day.
+Find when a specific name has its nameday.
 
 **Parameters:**
 - `name` (string): The name to search for
@@ -249,7 +265,7 @@ Find which names celebrate on a specific date.
 ```
 
 ### 3. get_today_name_days
-Get the names that have their name day today.
+Get the names that have their nameday today.
 
 **Parameters:**
 - `random_string` (string): Dummy parameter (required by MCP spec)
@@ -300,4 +316,4 @@ For questions or issues:
 
 ---
 
-**Note**: This MCP server provides information about traditional Slovak name days. The data includes all standard names in the Slovak calendar throughout the year. 
+**Note**: This MCP server provides nameday information for multiple countries with comprehensive traditional nameday calendars. The data includes all standard names throughout the year for each supported country. 

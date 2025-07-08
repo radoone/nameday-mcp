@@ -1,7 +1,7 @@
 {
   "name": "nameday-mcp-server",
   "version": "1.0.0",
-  "description": "MCP server for Slovak name days (nameday)",
+  "description": "MCP server providing nameday information for multiple countries including Slovakia, Czech Republic, Poland, and others. Find when a name has its nameday or discover which names celebrate on a specific date.",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -17,8 +17,13 @@
     "mcp",
     "nameday",
     "slovak",
+    "czech",
+    "polish",
+    "namedays",
+    "calendar",
     "name-days",
-    "fastify"
+    "fastify",
+    "model-context-protocol"
   ],
   "author": "",
   "license": "MIT",
