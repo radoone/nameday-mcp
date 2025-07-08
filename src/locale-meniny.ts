@@ -1,7 +1,7 @@
 import { NameDay, MENINY_DATA, findNamesByDate, findDateByName, getTodayNameDays } from './meniny-data.js';
-import czData from './data/cz.json' assert { type: 'json' };
-import huData from './data/hu.json' assert { type: 'json' };
-import bgData from './data/bg.json' assert { type: 'json' };
+import czData from './data/cz.json' with { type: 'json' };
+import huData from './data/hu.json' with { type: 'json' };
+import bgData from './data/bg.json' with { type: 'json' };
 
 export type Locale = 'sk' | 'cz' | 'hu' | 'bg';
 
