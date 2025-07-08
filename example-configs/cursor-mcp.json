@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "meniny-mcp-server": {
+      "command": "node",
+      "args": ["./path/to/nameday-mcp/dist/index.js"],
+      "cwd": "./path/to/nameday-mcp
+    }
+  }
+} 
