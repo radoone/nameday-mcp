@@ -46,7 +46,7 @@ Find when a specific name celebrates its nameday.
 {
   "tool": "find_name_day",
   "args": {
-    "name": "Peter",
+    "name": "Radovan",
     "locale": "sk"
   }
 }
@@ -136,7 +136,7 @@ curl -X POST https://nameday-mcp.vercel.app/api/tools \
   -d '{
     "tool": "find_name_day",
     "args": {
-      "name": "Peter",
+      "name": "Radovan",
       "locale": "sk"
     }
   }'
@@ -154,7 +154,7 @@ curl -X POST https://nameday-mcp.vercel.app/api/tools \
 
 Ask your AI assistant:
 
-- *"When is Peter's nameday in Slovakia?"*
+- *"When is Radovan's nameday in Slovakia?"*
 - *"Who celebrates nameday on June 29th in Czech Republic?"*
 - *"What names have nameday today in Poland?"*
 - *"Find all Hungarian names celebrating in July"*
@@ -191,7 +191,6 @@ src/
 - **AI Assistants** - Add cultural calendar knowledge
 - **Chatbots** - Provide nameday information in conversations
 - **Applications** - Integrate nameday features
-- **Educational Tools** - Teach about cultural traditions
 - **Personal Assistants** - Remind about friends' namedays
 
 ## 📖 More Information
@@ -206,4 +205,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-**🌟 Ready to get started?** Try the [online version](https://nameday-mcp.vercel.app/) or configure it with your Claude Desktop today! 
+**🌟 Ready to get started?** Try the [online version](https://nameday-mcp.vercel.app/) or configure it with your mcp host today! 

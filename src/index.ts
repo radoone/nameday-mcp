@@ -193,11 +193,11 @@ function createApp(serverName: string): FastifyInstance {
             </ul>
 
             <h3>💡 Example Usage</h3>
-            <div class="code-block">
+                         <div class="code-block">
 curl -X POST https://nameday-mcp.vercel.app/api/tools \\
   -H "Content-Type: application/json" \\
-  -d '{"tool": "find_name_day", "args": {"name": "Peter", "locale": "sk"}}'
-            </div>
+  -d '{"tool": "find_name_day", "args": {"name": "Radovan", "locale": "sk"}}'
+             </div>
 
             <h3>📖 More Information</h3>
             <a href="https://github.com/radoone/nameday-mcp" class="github-link">

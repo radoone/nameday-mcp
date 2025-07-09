@@ -46,7 +46,7 @@ const TOOLS: Tool[] = [
       properties: {
         name: {
           type: "string",
-          description: "The name to search for (e.g., 'Peter', 'Mária')",
+          description: "The name to search for (e.g., 'Radovan', 'Mária')",
         },
         locale: {
           type: "string",
