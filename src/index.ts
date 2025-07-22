@@ -127,7 +127,17 @@ function createApp(serverName: string): FastifyInstance {
     <body>
         <div class="container">
             <h1>🎉 Nameday MCP Server</h1>
-            <p class="subtitle">A Model Context Protocol server providing nameday information for 11+ countries</p>
+            <p class="subtitle">A complete Model Context Protocol server with tools, resources, prompts, and logging for 11+ countries</p>
+            
+            <div class="highlight">
+                <h3>✨ MCP Capabilities</h3>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                    <li><strong>🔧 Tools</strong> - 3 nameday lookup tools with validation</li>
+                    <li><strong>📊 Resources</strong> - Contextual information about locales and statistics</li>
+                    <li><strong>🎛️ Prompts</strong> - Pre-built query templates for common operations</li>
+                    <li><strong>📝 Logging</strong> - Comprehensive debugging and monitoring</li>
+                </ul>
+            </div>
             
             <div class="highlight">
                 <h3>🌍 Supported Countries</h3>
@@ -192,6 +202,21 @@ function createApp(serverName: string): FastifyInstance {
                 <li><strong>get_today_name_days</strong> - Get today's nameday celebrations</li>
             </ul>
 
+            <h3>📊 Available Resources</h3>
+            <ul>
+                <li><strong>nameday://supported-locales</strong> - List of all supported country locales</li>
+                <li><strong>nameday://locale-info/sk</strong> - Slovakia nameday calendar information</li>
+                <li><strong>nameday://locale-info/cz</strong> - Czech Republic nameday calendar information</li>
+                <li><strong>nameday://statistics</strong> - Server statistics and available features</li>
+            </ul>
+
+            <h3>🎛️ Available Prompts</h3>
+            <ul>
+                <li><strong>find-nameday</strong> - Find when a specific name has its nameday</li>
+                <li><strong>names-on-date</strong> - Find which names celebrate on a specific date</li>
+                <li><strong>today-namedays</strong> - Get today's nameday celebrations</li>
+            </ul>
+
             <h3>💡 Example Usage</h3>
                          <div class="code-block">
 curl -X POST https://nameday-mcp.vercel.app/api/tools \\
@@ -223,7 +248,7 @@ curl -X POST https://nameday-mcp.vercel.app/api/tools \\
       status: 'healthy',
       timestamp: new Date().toISOString(),
       server: serverName,
-      version: '1.0.0'
+      version: '1.1.0'
     };
   });
 

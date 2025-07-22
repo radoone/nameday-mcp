@@ -18,6 +18,9 @@ No installation required! The online version is ready to use immediately.
 - **⚡ Real-time queries** - Get today's nameday celebrations instantly
 - **🎯 Accurate data** - Traditional and culturally authentic nameday information
 - **🚀 Multiple access methods** - Online hosted version + local installation options
+- **📊 Resources support** - Access locale information and statistics via MCP resources
+- **🎛️ Prompts support** - Pre-built prompts for common nameday queries
+- **📝 Logging support** - Comprehensive logging for debugging and monitoring
 
 ## 🌍 Supported Countries
 
@@ -75,6 +78,35 @@ Get today's nameday celebrations.
   "args": {
     "locale": "sk",
     "random_string": "dummy"
+  }
+}
+```
+
+## 📊 Available Resources
+
+The server provides contextual information through MCP resources:
+
+- **nameday://supported-locales** - List of all supported country locales
+- **nameday://locale-info/sk** - Information about Slovakia nameday calendar  
+- **nameday://locale-info/cz** - Information about Czech Republic nameday calendar
+- **nameday://statistics** - Server statistics and available features
+
+## 🎛️ Available Prompts
+
+Pre-built prompts for common nameday queries:
+
+- **find-nameday** - Find when a specific name has its nameday
+- **names-on-date** - Find which names celebrate on a specific date
+- **today-namedays** - Get today's nameday celebrations
+
+### Example Prompt Usage
+
+```json
+{
+  "prompt": "find-nameday",
+  "arguments": {
+    "name": "Radovan",
+    "locale": "sk"
   }
 }
 ```
