@@ -307,22 +307,24 @@ export async function handleToolRequest(name: string, args: any) {
 export function createMCPServer(): Server {
   const server = new Server({
     name: "nameday-mcp-server",
-    version: "1.0.0",
+    version: "1.1.0",
   }, {
     capabilities: {
       tools: {
-        listChanged: true
+        listChanged: false,
       },
       resources: {
         subscribe: false,
-        listChanged: true
+        listChanged: false,
       },
       prompts: {
-        listChanged: true
+        listChanged: false,
       },
-      logging: {}
+      logging: {},
     },
   });
+
+  setupServerHandlers(server);
 
   return server;
 }
